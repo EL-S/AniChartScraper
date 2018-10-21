@@ -1,10 +1,9 @@
-from bs4 import BeautifulSoup
 from urllib.request import Request, urlopen
-import requests
 import json
 import gzip
 
-url =  "http://anichart.net/api/browse/anime?season=Fall&year=2018&sort=title_romaji&full_page=true&airing_data=true&page=1"
+#page 1-276
+url =  "http://anichart.net/api/browse/anime?page=1"
 
 cookie = {'XSRF-TOKEN': 'ILfjB7FSaQF0mXdKUTVtyPuY9UAgXespt3xOFTu5'}
 request = Request(url)
