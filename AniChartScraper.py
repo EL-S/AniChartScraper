@@ -16,6 +16,7 @@ i = 0
 pages_downloaded = []
 pages_json = {}
 cookies = {}
+total = 0
 
 def check_file():
     global filename
@@ -72,7 +73,7 @@ def create_json_file():
 ##            print(y['id'],y['title_english'])
 
 def download_json():
-    global cookies,start,end,i,threads
+    global cookies,start,end,i,threads,total
 
     x_csrf_token = cookies['XSRF-TOKEN']
     laravel_session = cookies['laravel_session']
@@ -84,6 +85,7 @@ def download_json():
         request = httpclient.HTTPRequest(url.strip(), headers=headers,method='GET',connect_timeout=10000,request_timeout=10000)
         http_client.fetch(request,handle_chapter_response)
         i += 1
+    total = i
     ioloop.IOLoop.instance().start()
 
 def handle_chapter_response(response):
@@ -91,11 +93,12 @@ def handle_chapter_response(response):
         print(response.effective_url,"error")
         http_client.fetch(response.effective_url.strip(), handle_chapter_response, method='GET',connect_timeout=10000,request_timeout=10000)
     else:
-        global i,pages_downloaded,pages_json
+        global i,pages_downloaded,pages_json,total
         data = response.body.decode('utf-8') #automatic gzip decompress apparently
         url = response.effective_url
         try:
-            print(url)
+            percentage = str(round(((int(total)-int(i))/int(total))*100)) + "%"
+            print(url, percentage)
             page_id = int(url.split("?")[1].split("=")[1])
             #print(page_id)
             pages_downloaded.append(page_id)
