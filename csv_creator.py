@@ -1,7 +1,7 @@
 import os
 import json
 
-file_name = "data.csv"
+file_name = "mal_links.csv"
 directory = "data/"
 full_path = directory + file_name
 silent = True
@@ -30,14 +30,17 @@ with open("database.json", "r") as file:
 
 result = json.loads(json_str)
 for anime in result:
-    if silent != True
+    if silent != True:
         print(anime['id'],anime['title_english'],anime['title_romaji'])
     anime_id = anime['id']
-    title_english = anime['title_english']
-    title_romaji = anime['title_romaji']
-    rating = anime['average_score']
-    popularity = anime['popularity']
-    data = (str(anime_id),str(title_english),str(title_romaji),str(rating),str(popularity))
+    #title_english = len(anime['title_english'])
+    mal_link = anime['mal_link']
+    #title_romaji = anime['title_romaji']
+    #rating = anime['average_score']
+    #popularity = anime['popularity']
+    #episodes = anime['total_episodes']
+    #data = (str(anime_id),str(title_english),str(title_romaji),str(rating),str(popularity))
+    data = (str(anime_id),str(mal_link))
     data_line = ",".join(data)
     with open(full_path, "a", encoding="utf-8") as data_csv:
         data_csv.write(data_line+"\n")
