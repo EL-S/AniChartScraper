@@ -1,7 +1,7 @@
 import os
 import json
 
-file_name = "mal_links.csv"
+file_name = "analysis.csv"
 directory = "data/"
 full_path = directory + file_name
 silent = True
@@ -25,22 +25,38 @@ def check_file():
     
 check_file()
 
+lines = []
+
 with open("database.json", "r") as file:
     json_str = file.read()
 
 result = json.loads(json_str)
 for anime in result:
+    title = anime['title']
     if silent != True:
-        print(anime['id'],anime['title_english'],anime['title_romaji'])
+        try:
+            title_romaji = title['romaji']
+        except:
+            title_romaji = ""
+        try:
+            title_english = title['english']
+        except:
+            title_english = ""
+        print(anime['id'],title_english,title_romaji)
     anime_id = anime['id']
-    #title_english = len(anime['title_english'])
-    mal_link = anime['mal_link']
-    #title_romaji = anime['title_romaji']
-    #rating = anime['average_score']
-    #popularity = anime['popularity']
-    #episodes = anime['total_episodes']
-    #data = (str(anime_id),str(title_english),str(title_romaji),str(rating),str(popularity))
-    data = (str(anime_id),str(mal_link))
+    try:
+        title_english = len(title['english'])
+    except:
+        title_english = len(title['romaji'])
+    mal_link = anime['siteUrl']
+    title_romaji = title['romaji']
+    rating = anime['averageScore']
+    popularity = anime['popularity']
+    episodes = anime['episodes']
+    data = (str(anime_id),str(title_english),str(title_romaji),str(rating),str(popularity))
+    #data = (str(anime_id),str(mal_link))
     data_line = ",".join(data)
-    with open(full_path, "a", encoding="utf-8") as data_csv:
-        data_csv.write(data_line+"\n")
+    lines.append(data_line)
+    
+with open(full_path, "w", encoding="utf-8") as data_csv:
+    data_csv.write("\n".join(lines))
