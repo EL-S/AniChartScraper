@@ -23,18 +23,22 @@ def download_data(page_num):
 
         res = requests.post(url, headers=headers, json=json_data)
 
-        print(res)
-        print(res.headers['X-RateLimit-Remaining'])
+        if res.status_code != 200:
+            raise requests.HTTPError('Reattempting page...')
+        else:
+            rem_req = res.headers['X-RateLimit-Remaining']
+            print(f"Remaining Requests Allowed: {rem_req}\nPage: {page_num}")
 
-        res_data_raw = res.text
+            res_data_raw = res.text
 
-        json_str = json.loads(res_data_raw)
-        res_data = json_str['data']
-        next_page = res_data['Page']['pageInfo']['hasNextPage']
-        page_data = res_data['Page']['media']
-        json_pages.append(page_data)
+            json_str = json.loads(res_data_raw)
+            res_data = json_str['data']
+            next_page = res_data['Page']['pageInfo']['hasNextPage']
+            page_data = res_data['Page']['media']
+            json_pages.append(page_data)
         
-    except:
+    except Exception as e:
+        print(e)
         next_page = download_data(page_num)
 
     return next_page
