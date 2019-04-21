@@ -3,6 +3,8 @@ import json
 
 json_pages = []
 
+# add threading back in, determine how many pages there is using an algorithm perhaps
+
 def download_data(page_num):
     try:
         global json_pages
