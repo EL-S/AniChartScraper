@@ -4,6 +4,7 @@ import json
 json_pages = []
 
 # add threading back in, determine how many pages there is using an algorithm perhaps
+# attempt to request all data through graphql, eg. anti-pagination 
 
 def download_data(page_num):
     try:
