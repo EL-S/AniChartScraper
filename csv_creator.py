@@ -43,11 +43,11 @@ for anime in result:
         except:
             title_english = ""
         print(anime['id'],title_english,title_romaji)
-    anime_id = anime['id']
     try:
-        title_english = len(title['english'])
+        anime_id = anime['idMal']
     except:
-        title_english = len(title['romaji'])
+        anime_id = "-1"
+    title_english = title['english']
     mal_link = anime['siteUrl']
     title_romaji = title['romaji']
     rating = anime['averageScore']
