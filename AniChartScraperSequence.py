@@ -6,6 +6,7 @@ json_pages = []
 # add threading back in, determine how many pages there is using an algorithm perhaps
 # attempt to request all data through graphql, eg. anti-pagination 
 
+
 def download_data(page_num):
     try:
         global json_pages
@@ -19,8 +20,8 @@ def download_data(page_num):
 
         variables = {"page":int(page_num)}
 
-        query_response_format = "{\n\tPage(page: $page) {\n\t\tpageInfo {\n\t\t\thasNextPage\n\t\t\ttotal\n\t\t}\n\t\tmedia(\n\t\t\tformat_not: $excludeFormat,\n\t\t\tstatus: $status,\n\t\t\tepisodes_greater: $minEpisodes,\n\t\t\tisAdult: false,\n\t\t\ttype: ANIME,\n\t\t\tsort: TITLE_ROMAJI,\n\t\t) {\n\t\t\t\nid\nidMal\ntitle {\n\tromaji\n\tnative\n\tenglish\n}\nstartDate {\n\tyear\n\tmonth\n\tday\n}\nendDate {\n\tyear\n\tmonth\n\tday\n}\nstatus\nseason\nformat\ngenres\nsynonyms\nduration\npopularity\nepisodes\nsource(version: 2)\ncountryOfOrigin\nhashtag\naverageScore\nsiteUrl\ndescription\nbannerImage\nisAdult\ncoverImage {\n\textraLarge\n\tcolor\n}\ntrailer {\n\tid\n\tsite\n\tthumbnail\n}\nexternalLinks {\n\tsite\n\turl\n}\nrankings {\n\trank\n\ttype\n\tseason\n\tallTime\n}\nstudios(isMain: true) {\n\tnodes {\n\t\tid\n\t\tname\n\t\tsiteUrl\n\t}\n}\nrelations {\n\tedges {\n\t\trelationType(version: 2)\n\t\tnode {\n\t\t\tid\n\t\t\ttitle {\n\t\t\t\tromaji\n\t\t\t\tnative\n\t\t\t\tenglish\n\t\t\t}\n\t\t\tsiteUrl\n\t\t}\n\t}\n}\n\nairingSchedule(\n\tnotYetAired: true\n\tperPage: 2\n) {\n\tnodes {\n\t\tepisode\n\t\tairingAt\n\t}\n}\n\n\t\t}\n\t}\n}"
-        query = "query (\n\t$excludeFormat: MediaFormat,\n\t$status: MediaStatus,\n\t$minEpisodes: Int,\n\t$page: Int,\n)"+query_response_format
+        query_response_format = "{\n\tPage(page: $page) {\n\t\tpageInfo {\n\t\t\thasNextPage\n\t\t\ttotal\n\t\tperPage\n\t\tcurrentPage\n\t\tlastPage\n\t\t}\n\t\tmedia(\n\t\t\tsort: TITLE_ROMAJI,\n\t\t) {\n\t\t\t\nid\nidMal\ntitle {\n\tromaji\n\tnative\n\tenglish\n}\nstartDate {\n\tyear\n\tmonth\n\tday\n}\nendDate {\n\tyear\n\tmonth\n\tday\n}\nstatus\nseason\nformat\ngenres\nsynonyms\nduration\npopularity\nepisodes\nsource(version: 2)\ncountryOfOrigin\nhashtag\naverageScore\nsiteUrl\ndescription\nbannerImage\nisAdult\ncoverImage {\n\textraLarge\n\tcolor\n}\ntrailer {\n\tid\n\tsite\n\tthumbnail\n}\nexternalLinks {\n\tsite\n\turl\n}\nrankings {\n\trank\n\ttype\n\tseason\n\tallTime\n}\nstudios(isMain: true) {\n\tnodes {\n\t\tid\n\t\tname\n\t\tsiteUrl\n\t}\n}\nrelations {\n\tedges {\n\t\trelationType(version: 2)\n\t\tnode {\n\t\t\tid\n\t\t\ttitle {\n\t\t\t\tromaji\n\t\t\t\tnative\n\t\t\t\tenglish\n\t\t\t}\n\t\t\tsiteUrl\n\t\t}\n\t}\n}\n\nairingSchedule(\n\tnotYetAired: true\n\tperPage: 2\n) {\n\tnodes {\n\t\tepisode\n\t\tairingAt\n\t}\n}\n\n\t\t}\n\t}\n}"
+        query = "query (\n\t$page: Int,\n)"+query_response_format
         json_data = {"query":query,
                 "variables":variables}
 
@@ -30,14 +31,18 @@ def download_data(page_num):
             raise requests.HTTPError('Reattempting page...')
         else:
             rem_req = res.headers['X-RateLimit-Remaining']
-            print(f"Remaining Requests Allowed: {rem_req}\nPage: {page_num}")
-
+            
             res_data_raw = res.text
 
             json_str = json.loads(res_data_raw)
             res_data = json_str['data']
             next_page = res_data['Page']['pageInfo']['hasNextPage']
             page_data = res_data['Page']['media']
+            last_page = res_data['Page']['pageInfo']['lastPage']
+            current_page = res_data['Page']['pageInfo']['currentPage']
+            
+            print(f"Remaining Requests Allowed: {rem_req}\nPage: {page_num}, Remaining: {last_page-current_page}")
+            
             json_pages.append(page_data)
         
     except Exception as e:
