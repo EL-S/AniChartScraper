@@ -1,7 +1,6 @@
 import requests
 import json
 from tornado import ioloop, httpclient
-import urllib
 
 json_pages = {}
 
