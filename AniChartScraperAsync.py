@@ -1,4 +1,3 @@
-import requests
 import json
 from tornado import ioloop, httpclient
 
