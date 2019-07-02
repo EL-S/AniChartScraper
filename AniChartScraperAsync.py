@@ -7,6 +7,8 @@ threads = 300
 
 i = 0
 
+# use a library that helps build graphql statements
+
 headers = {"Content-Type":"application/json",
                    "Origin":"https://anichart.net",
                    "Referer":"https://anichart.net/e8210097149260262919.worker.js",
